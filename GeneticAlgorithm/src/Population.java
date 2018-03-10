@@ -12,27 +12,29 @@ public class Population
 {
     Schedule[] population;
     int pop_size;
+    int cross_prob;
+    int mut_prob;
 
-    public Population(int pop_size)
+    public Population(int pop_size, int cross_prob, int mut_prob)
     {
         this.pop_size = pop_size;
         population = new Schedule[pop_size];
+        this.cross_prob = cross_prob;
+        this.mut_prob = mut_prob;
     }
 
     public void initialize(String definitionFile)
     {
-        MSRCPSPIO reader;
-
+        MSRCPSPIO reader= new MSRCPSPIO();
+        Schedule sch = reader.readDefinition(definitionFile);
         for(int i = 0; i < pop_size; i++)
         {
-            reader = new MSRCPSPIO();
-            Schedule sch = reader.readDefinition(definitionFile);
-            schedule(sch);
-            ScheduleBuilder builder = new ForwardScheduleBuilder(sch.getSuccesors());
-            builder.build(sch);
-            builder.buildTimestamps(sch);
+            Schedule sch2 = new Schedule(sch);
+            schedule(sch2);
+            ScheduleBuilder builder = new ForwardScheduleBuilder(sch2.getSuccesors());
+            builder.buildTimestamps(sch2);
 //            System.out.println(sch.getTasks()[0] + " + " + sch.getTasks()[0].getResourceId());
-            population[i] = sch;
+            population[i] = sch2;
         }
 //        showPopulation();
     }
@@ -74,18 +76,25 @@ public class Population
         for(int i = 0; i < tasks.length; i++)
         {
             List<Resource> capRes = schedule.getCapableResources(tasks[i]);
-            for (Resource res : capRes)
-            {
-                System.out.print(res.getId() + ", ");
-            }
-            System.out.println("Koniec capRes");
-//            System.out.println(capRes);
             int random = rand.nextInt(capRes.size());
             tasks[i].setResourceId(capRes.get(random).getId());
-//            System.out.println(random);
-//            System.out.println("i: " + i + ", " + tasks[i].getResourceId());
         }
     }
 
+    public Schedule[] crossing_over(Schedule sch1, Schedule sch2)//tu będę zwracać tablicę dwóch Scheduli
+    {
+        //check if there will be a crossing
+        Random rand = new Random();
+        if(rand.nextDouble() < cross_prob)
+        {
+            //if yes, then find an index of crossing point
 
+        }
+
+
+
+        //return those 2 crossed individuals in an array
+
+        //if no then return 2 parents in an array
+    }
 }
