@@ -4,6 +4,15 @@ public class Runner
     public static void main(String[] args)
     {
         Population pop = new Population(definitionFile, 1000, 100, 2, 2, 5);
-        pop.evolution();
+        evolution(pop);
+    }
+
+    public static void evolution(Population population)
+    {
+        population.initialize();
+        for(int i = 0; i < population.getGenerations(); i++)
+        {
+            population.nextGeneration();
+        }
     }
 }

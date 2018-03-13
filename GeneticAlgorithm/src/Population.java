@@ -74,6 +74,26 @@ public class Population
         }
     }
 
+    public void showIndividual(Schedule schedule)
+    {
+        Task[] tasks = schedule.getTasks();
+        for(Task task : tasks)
+        {
+            System.out.print(task.getId() + " ");
+        }
+        System.out.println();
+        for(int j = 0; j < tasks.length; j++)
+        {
+            if(j < 9)
+            {
+                System.out.print(tasks[j].getResourceId() + " ");
+            }
+            else
+            {
+                System.out.print(tasks[j].getResourceId() + "  ");
+            }
+        }
+    }
     private void schedule(Schedule schedule)
     {
         Random rand = new Random();
@@ -143,7 +163,7 @@ public class Population
         return schedule;
     }
 
-    public Schedule tournament(int tournamentSize)//co ja robię ze swoim kodem
+    public Schedule tournament()//co ja robię ze swoim kodem
     {
         Schedule[] tournament = new Schedule[tournamentSize];
         Schedule winner;
@@ -171,12 +191,25 @@ public class Population
         return winner;
     }
 
-    public void evolution()//w ogóle gdzie to ma być? może w Runnerze?
+    public void nextGeneration()
     {
-        initialize();
+        Schedule[] newPopulation = new Schedule[pop_size];
+        for(int i = 0; i < pop_size; )
+        {
+            Schedule sch1 = tournament();
+            Schedule sch2 = tournament();
+            Schedule[] children = crossing_over(sch1, sch2);
+            mutation(children[0]);
+            mutation(children[1]);
+            newPopulation[i++] = children[0];
+            if(i < pop_size)
+                newPopulation[i++] = children[1];
+        }
+        population = newPopulation;
+    }
 
-
-        //crossing_over
-        //evolution
+    public int getGenerations()
+    {
+        return generations;
     }
 }
