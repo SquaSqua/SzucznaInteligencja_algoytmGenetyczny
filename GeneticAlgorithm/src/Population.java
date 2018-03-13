@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class Population
 {
-    Schedule[] population;
+    private Schedule[] population;
     private int generations;
     private int pop_size;
     private double cross_prob;
@@ -94,6 +94,7 @@ public class Population
             }
         }
     }
+
     private void schedule(Schedule schedule)
     {
         Random rand = new Random();
@@ -106,7 +107,7 @@ public class Population
         }
     }
 
-    public Schedule[] crossing_over(Schedule sch1, Schedule sch2)//w ogóle nijak nie sprawdzone XD
+    private Schedule[] crossing_over(Schedule sch1, Schedule sch2)
     {
         //check if there will be a crossing
         Random rand = new Random();
@@ -141,7 +142,7 @@ public class Population
         return result;
     }
 
-    public Schedule mutation(Schedule sch1)//to też nie było sprawdzane
+    private Schedule mutation(Schedule sch1)
     {
         Random rand = new Random();
         Schedule schedule = new Schedule(sch1);
@@ -163,7 +164,7 @@ public class Population
         return schedule;
     }
 
-    public Schedule tournament()//co ja robię ze swoim kodem
+    private Schedule tournament()
     {
         Schedule[] tournament = new Schedule[tournamentSize];
         Schedule winner;
@@ -181,9 +182,10 @@ public class Population
             for(int i = 1; i < tournamentSize; i++)
             {
                 BaseEvaluator evaluatorTemp = new DurationEvaluator(tournament[i]);
-                if(lowestDuration > evaluatorTemp.evaluate())
+                double nextDuration = evaluatorTemp.evaluate();
+                if(lowestDuration > nextDuration)
                 {
-                    lowestDuration = evaluatorTemp.evaluate();
+                    lowestDuration = nextDuration;
                     winner = tournament[i];
                 }
             }
@@ -199,11 +201,9 @@ public class Population
             Schedule sch1 = tournament();
             Schedule sch2 = tournament();
             Schedule[] children = crossing_over(sch1, sch2);
-            mutation(children[0]);
-            mutation(children[1]);
-            newPopulation[i++] = children[0];
+            newPopulation[i++] = mutation(children[0]);
             if(i < pop_size)
-                newPopulation[i++] = children[1];
+                newPopulation[i++] = mutation(children[1]);
         }
         population = newPopulation;
     }
