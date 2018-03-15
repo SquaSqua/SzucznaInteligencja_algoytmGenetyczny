@@ -44,66 +44,65 @@ public class Population
         }
     }
 
-    public void showPopulation()
-    {
-        for(int z = 0; z < pop_size; z++)
-        {
-            Task[] tasks = population[z].getTasks();
-            for(Task task : tasks)
-            {
-                System.out.print(task.getId() + " ");
-            }
-            System.out.println();
-            for(int j = 0; j < tasks.length; j++)
-            {
-                if(j < 9)
-                {
-                    System.out.print(tasks[j].getResourceId() + " ");
-                }
-                else
-                {
-                    System.out.print(tasks[j].getResourceId() + "  ");
-                }
-            }
-            System.out.println();
-            for(int i = 0; i < tasks.length*3 - 9; i++)
-            {
-                System.out.print("_");
-            }
-            System.out.println();
-        }
-    }
+//    public void showPopulation()
+//    {
+//        for(int z = 0; z < pop_size; z++)
+//        {
+//            Task[] tasks = population[z].getTasks();
+//            for(Task task : tasks)
+//            {
+//                System.out.print(task.getId() + " ");
+//            }
+//            System.out.println();
+//            for(int j = 0; j < tasks.length; j++)
+//            {
+//                if(j < 9)
+//                {
+//                    System.out.print(tasks[j].getResourceId() + " ");
+//                }
+//                else
+//                {
+//                    System.out.print(tasks[j].getResourceId() + "  ");
+//                }
+//            }
+//            System.out.println();
+//            for(int i = 0; i < tasks.length*3 - 9; i++)
+//            {
+//                System.out.print("_");
+//            }
+//            System.out.println();
+//        }
+//    }
 
-    public void showIndividual(Schedule schedule)
-    {
-        Task[] tasks = schedule.getTasks();
-        for(Task task : tasks)
-        {
-            System.out.print(task.getId() + " ");
-        }
-        System.out.println();
-        for(int j = 0; j < tasks.length; j++)
-        {
-            if(j < 9)
-            {
-                System.out.print(tasks[j].getResourceId() + " ");
-            }
-            else
-            {
-                System.out.print(tasks[j].getResourceId() + "  ");
-            }
-        }
-    }
+//    public void showIndividual(Schedule schedule)
+//    {
+//        Task[] tasks = schedule.getTasks();
+//        for(Task task : tasks)
+//        {
+//            System.out.print(task.getId() + " ");
+//        }
+//        System.out.println();
+//        for(int j = 0; j < tasks.length; j++)
+//        {
+//            if(j < 9)
+//            {
+//                System.out.print(tasks[j].getResourceId() + " ");
+//            }
+//            else
+//            {
+//                System.out.print(tasks[j].getResourceId() + "  ");
+//            }
+//        }
+//    }
 
     private void schedule(Schedule schedule)
     {
         Random rand = new Random();
         Task[] tasks = schedule.getTasks();
-        for(int i = 0; i < tasks.length; i++)
-        {
-            List<Resource> capRes = schedule.getCapableResources(tasks[i]);
+        for (Task task : tasks) {
+            List<Resource> capRes = schedule.getCapableResources(task);
             int random = rand.nextInt(capRes.size());
-            tasks[i].setResourceId(capRes.get(random).getId());
+            task.setResourceId(capRes.get(random).getId());
         }
     }
 
@@ -136,9 +135,11 @@ public class Population
             //return those 2 crossed individuals in an array
             result = new Schedule[]{schedule1, schedule2};
         }
-        //if no then return 2 parents in an array
-        result = new Schedule[]{sch1, sch2};
-
+        else
+        {
+            //if no then return 2 parents in an array
+            result = new Schedule[]{sch1, sch2};
+        }
         return result;
     }
 
@@ -193,7 +194,7 @@ public class Population
         return winner;
     }
 
-    public void nextGeneration()
+    public String nextGeneration(int pop_number)
     {
         Schedule[] newPopulation = new Schedule[pop_size];
         for(int i = 0; i < pop_size; )
@@ -206,6 +207,30 @@ public class Population
                 newPopulation[i++] = mutation(children[1]);
         }
         population = newPopulation;
+        return statistics(pop_number);
+    }
+
+    private String statistics(int pop_number)
+    {
+        double minDuration = Integer.MAX_VALUE;
+        double maxDuration = 0;
+        double avgDuration = 0;
+
+        for(Schedule sch : population)
+        {
+            BaseEvaluator evaluator = new DurationEvaluator(sch);
+            double duration = evaluator.evaluate();
+            if(duration < minDuration)
+            {
+                minDuration = duration;
+            }
+            if(duration > maxDuration)
+            {
+                maxDuration = duration;
+            }
+            avgDuration += duration;
+        }
+        return pop_number + ", " + minDuration + "," + maxDuration + "," + avgDuration/pop_size;
     }
 
     public int getGenerations()
