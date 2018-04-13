@@ -260,7 +260,7 @@ public class Population
         return statistics(pop_number);
     }
 
-    private String statistics(int pop_number)
+    public String statistics(int pop_number)
     {
         double minDuration = Integer.MAX_VALUE;
         double maxDuration = 0;
